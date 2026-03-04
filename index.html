@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>For My Favorite ✨</title>
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.5.1/dist/confetti.browser.min.js"></script>
+    <style>
+        :root {
+            --primary-pink: #ff4d6d;
+            --soft-pink: #ff85a1;
+            --dark-pink: #c9184a;
+            --bg-gradient: linear-gradient(135deg, #fff0f3 0%, #ffccd5 100%);
+        }
+
+        * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+
+        body {
+            background: var(--bg-gradient);
+            font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            display: flex; justify-content: center; align-items: center;
+            min-height: 100vh; margin: 0; overflow: hidden;
+        }
+
+        /* Glassmorphism Card */
+        .card {
+            background: rgba(255, 255, 255, 0.9);
+            backdrop-filter: blur(10px);
+            padding: 40px 30px;
+            border-radius: 40px;
+            box-shadow: 0 20px 60px rgba(255, 77, 109, 0.2);
+            text-align: center;
+            width: 90%; max-width: 450px;
+            border: 2px solid rgba(255, 255, 255, 0.5);
+        }
+
+        .screen { display: none; }
+        .active { display: block; animation: slideIn 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
+
+        @keyframes slideIn { from { transform: translateY(30px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+
+        h2 { color: var(--dark-pink); font-size: 2rem; margin-bottom: 10px; font-weight: 800; }
+        p { color: #5a5a5a; font-size: 1.2rem; line-height: 1.5; margin: 20px 0; }
+
+        img { 
+            width: 100%; border-radius: 30px; 
+            box-shadow: 0 10px 20px rgba(0,0,0,0.1); 
+            margin-bottom: 20px;
+        }
+
+        /* Large Mobile-Friendly Buttons */
+        button {
+            padding: 18px 35px; border-radius: 50px; border: none;
+            cursor: pointer; font-weight: bold; font-size: 1.2rem;
+            transition: all 0.3s ease; width: 100%; margin: 10px 0;
+            display: block;
+        }
+
+        .btn-main {
+            background: var(--primary-pink); color: white;
+            box-shadow: 0 8px 15px rgba(255, 77, 109, 0.4);
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.03); }
+            100% { transform: scale(1); }
+        }
+
+        .btn-no { background: #f1f1f1; color: #888; font-size: 1rem; width: auto; display: inline-block; margin-top: 20px; }
+
+        /* Polaroid Section */
+        .polaroid-frame { display: flex; gap: 15px; justify-content: center; margin-top: 20px; }
+        .polaroid {
+            background: white; padding: 10px 10px 25px 10px;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+            width: 48%; transform: rotate(-3deg);
+        }
+        .polaroid img { border-radius: 0; box-shadow: none; margin: 0; }
+        
+        #typed { font-style: italic; color: var(--primary-pink); font-weight: bold; min-height: 3em; }
+    </style>
+</head>
+<body>
+
+    <div class="card">
+        <div id="s1" class="screen active">
+            <h2>Hey, Bestie! ✨</h2>
+            <img src="images/cat_hey.gif" alt="Hey Cat">
+            <p>I crafted a little digital corner just for you. Ready to explore?</p>
+            <button class="btn-main" onclick="next(2)">Open it Up! 🚀</button>
+            <button id="noBtn" class="btn-no" onmouseover="moveNo()" onclick="moveNo()">Nah</button>
+        </div>
+
+        <div id="s2" class="screen">
+            <h2>Wait... 🛑</h2>
+            <img src="images/cat_think.gif" alt="Thinking Cat">
+            <p>You can only proceed if you're officially the cutest person on earth. Confirm?</p>
+            <button class="btn-main" onclick="next(3)">Confirmed! 🙋‍♀️</button>
+        </div>
+
+        <div id="s3" class="screen">
+            <h2 style="color: var(--primary-pink)">Happy Birthday! ❤️</h2>
+            <div class="polaroid-frame">
+                <div class="polaroid"><img src="images/photo1.jpg"></div>
+                <div class="polaroid" style="transform: rotate(5deg);"><img src="images/photo2.jpg"></div>
+            </div>
+            <p id="typed"></p>
+            <button class="btn-main" onclick="next(4)">One More Thing... 🎁</button>
+        </div>
+
+        <div id="s4" class="screen">
+            <h2>Virtual Hug! 🫂</h2>
+            <img src="images/hug.gif" alt="Hug">
+            <p>Sending all the good vibes to my favorite notification. Love you! 💖</p>
+        </div>
+    </div>
+
+    <script>
+        function next(n) {
+            document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+            document.getElementById('s'+n).classList.add('active');
+            if(n === 3) {
+                typeWriter();
+                // Trigger Confetti Explosion
+                var duration = 3 * 1000;
+                var animationEnd = Date.now() + duration;
+                var defaults = { startVelocity: 30, spread: 360, ticks: 60, zIndex: 0 };
+                function randomInRange(min, max) { return Math.random() * (max - min) + min; }
+                var interval = setInterval(function() {
+                    var timeLeft = animationEnd - Date.now();
+                    if (timeLeft <= 0) { return clearInterval(interval); }
+                    var particleCount = 50 * (timeLeft / duration);
+                    confetti(Object.assign({}, defaults, { particleCount, origin: { x: randomInRange(0.1, 0.3), y: Math.random() - 0.2 } }));
+                    confetti(Object.assign({}, defaults, { particleCount, origin: { x: randomInRange(0.7, 0.9), y: Math.random() - 0.2 } }));
+                }, 250);
+            }
+        }
+
+        function moveNo() {
+            const b = document.getElementById('noBtn');
+            b.style.position = 'fixed'; // Works better on mobile
+            b.style.left = Math.random() * 70 + 15 + '%';
+            b.style.top = Math.random() * 70 + 15 + '%';
+        }
+
+        function typeWriter() {
+            const txt = "You're my favorite notification. Stay cute, stay happy. You mean the world to me! ✨";
+            let i = 0;
+            const el = document.getElementById('typed');
+            el.innerHTML = "";
+            function type() {
+                if (i < txt.length) {
+                    el.innerHTML += txt.charAt(i);
+                    i++;
+                    setTimeout(type, 40);
+                }
+            }
+            type();
+        }
+    </script>
+</body>
+</html>
